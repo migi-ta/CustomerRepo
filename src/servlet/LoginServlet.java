@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dao.SqlDao;
+import dto.Customer;
 import dto.LoginUser;
 
 /**
@@ -44,12 +46,19 @@ public class LoginServlet extends HttpServlet {
 		String login_pass = login.get(0).getPassword();
 
 		if(user.equals(login_user) && password.equals(login_pass)) {
-			//ログイン成功→次に画面へ
+			//ログイン成功
+			//顧客情報を格納するリストを作成
+			List<Customer> customer_data = new ArrayList<Customer>();
+			//顧客情報を取得するメソッドの呼び出し
+			customer_data = sql.get_customer_info();
+			//requestオブジェクトに顧客情報を持たせる
+			request.setAttribute("customer", customer_data);
+			//顧客画面に遷移
 			RequestDispatcher dispatcher =
 					request.getRequestDispatcher("WEB-INF/jsp/customer_list.jsp");
 			dispatcher.forward(request, response);
 		} else {
-			//ログイン失敗→ログイン画面へ戻る
+			//ログイン失敗
 			RequestDispatcher dispatcher =
 					request.getRequestDispatcher("WEB-INF/jsp/login.jsp");
 			dispatcher.forward(request, response);
